@@ -7,6 +7,7 @@ import sys
 from simple_websocket_server import WebSocketServer, WebSocket
 from threading import Thread
 
+
 class Visualizer(object):
     def __init__(self):
         self.app = QtGui.QApplication(sys.argv)
@@ -31,6 +32,7 @@ class Visualizer(object):
         gz.translate(0, 0, -10)
         self.w.addItem(gz)
 
+
         self.counter = 1
         self.n = 1000
         self.dist = 5
@@ -41,7 +43,9 @@ class Visualizer(object):
             QtGui.QApplication.instance().exec_()
 
     def update(self):
-        if self.counter < self.n:
+        global update_flag
+
+        if self.counter < self.n and update_flag:
             xx = self.t[self.counter-1] * np.sin(25 * self.t[self.counter-1])
             yx = self.t[self.counter-1] * np.cos(25 * self.t[self.counter-1])
             zx = self.dist*self.t[self.counter-1]-10
@@ -58,42 +62,39 @@ class Visualizer(object):
                 (self.counter, 9)), width=3, antialias=True)
             self.w.addItem(plot)
             self.counter += 1
+            update_flag=False
 
     def animation(self):
-        # timer = QtCore.QTimer()
-        # timer.timeout.connect(self.update)
-        # timer.start(16)
+        timer = QtCore.QTimer()
+        timer.timeout.connect(self.update)
+        timer.start(10)
         self.start()
-
 
 
 class WSServer(WebSocket):
     def handle(self):
+        global update_flag
         print(f"Received Data:{self.data}")
-        #v.update()
 
-        t = self.data.split(';')
-        cltData = np.asarray(t, dtype=np.float64, order='C')
+        update_flag=True
+        #
+        # t = self.data.split(';')
+        # cltData = np.asarray(t, dtype=np.float64, order='C')
 
         #print(f"Parsed data:\nx:{cltData[0]}\ny:{cltData[1]}\nz:{cltData[2]}\n\n")
 
         self.send_message(f"Ack#{1}")
 
-    #
-    # def connected(self):
-    #     print(self.address, 'connected')
-    #
-    # def handle_close(self):
-    #     print(self.address, 'closed')
-
 
 def runServer():
+    print("Started backend WS server. Listening at port: 8765")
     server = WebSocketServer('localhost', 8765, WSServer)
     server.serve_forever()
 
 
-# Start Qt event loop unless running in interactive mode.
 if __name__ == '__main__':
+    update_flag=False
+
     ws_run = Thread(target=runServer)
     ws_run.start()
 
@@ -102,26 +103,7 @@ if __name__ == '__main__':
 
 
 
-
-
-
 '''
 
-async def receiveData(websocket, path):
-    global cnt
-    global v
-    print("waiting connection...")
-    payload = await websocket.recv()
-
-    print(f"Received Data:{payload}")
-    v.update()
-
-    t=payload.split(';')
-    cltData=np.asarray(t, dtype=np.float64, order='C')
-
-    print(f"Parsed data:\nx:{cltData[0]}\ny:{cltData[1]}\nz:{cltData[2]}\n\n")
-
-    await websocket.send(f"Ack#{cnt}")
-    cnt+=1
 
 '''
