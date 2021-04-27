@@ -5,7 +5,7 @@ import time
 
 async def sendData():
     uri = "ws://localhost:8765"
-    for i in range(0,n+1):
+    for i in range(1,n+1):
         async with websockets.connect(uri) as websocket:
         
             x = t[i] * np.sin(25 * t[i])
@@ -20,7 +20,7 @@ async def sendData():
             ack = await websocket.recv()
             print(f"Received ack:{ack}")
 
-            time.sleep(1)
+            time.sleep(.05)
             
 
 n = 1000
