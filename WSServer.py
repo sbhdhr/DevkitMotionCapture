@@ -18,4 +18,4 @@ class WSServer(WebSocket):
         Globals.ydot = tuple(cltData)
         Globals.viz_update_flag = True
 
-        self.send_message(f"Ack")
+        #self.send_message(f"Ack")

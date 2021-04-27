@@ -13,12 +13,12 @@ async def sendData():
             z = dist * t[i] - 10
 
             payload=";".join(str(x) for x in [x,y,z])
-
+            print(payload)
             await websocket.send(payload)
             print(f"Sent #{i}...")
 
-            ack = await websocket.recv()
-            print(f"Received ack:{ack}")
+            # ack = await websocket.recv()
+            # print(f"Received ack:{ack}")
 
             time.sleep(.05)
             

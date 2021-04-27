@@ -6,7 +6,7 @@ from threading import Thread
 
 def runServer():
     print("Main:: Started backend WS server. Listening at port: 8765")
-    server = WebSocketServer('localhost', 8765, WSServer)
+    server = WebSocketServer('192.168.0.122', 8765, WSServer)
     server.serve_forever()
 
 
